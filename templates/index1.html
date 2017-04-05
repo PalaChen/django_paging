@@ -13,6 +13,15 @@
     {% if posts.has_previous %}
         <a href="/index1?p={{ posts.previous_page_number }}">上一页</a>
     {% endif %}
+
+    {% for i in posts.paginator.pager_num_range %}
+        {% if i == posts.number %}
+            <a href="/index1?p={{ i }}" style="color: red">{{ i }}</a>
+        {% else %}
+            <a href="/index1?p={{ i }}">{{ i }}</a>
+        {% endif %}
+    {% endfor %}
+
     {% if posts.has_next %}
         <a href="/index1?p={{ posts.next_page_number }}">下一页</a>
     {% endif %}

@@ -1,4 +1,36 @@
 from django.shortcuts import render
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+
+class CustonPaginator(Paginator):
+    def __init__(self, current_page, per_page_num, *args, **kwargs):
+        super(CustonPaginator, self).__init__(*args, **kwargs)
+        # 当前页
+        self.current_page = int(current_page)
+        # 最多显示页码数量
+        self.per_page_num = int(per_page_num)
+
+    def pager_num_range(self):
+        # 当前页
+        # self.current_page
+        # 最多显示的页码数量
+        # self.per_page_num
+        # 总页数
+        # self.num_pages
+
+        # 如果总页数小于显示页码数量
+        if self.num_pages < self.per_page_num:
+            return range(1, self.num_pages + 1)
+
+        part = int(self.per_page_num / 2)
+        # 如果总页数大于显示页码数量
+        if self.current_page <= part:
+            return range(1, self.per_page_num + 1)
+
+        if (self.current_page + part) > self.num_pages:
+            return range(self.num_pages - self.per_page_num, self.num_pages + 1)
+        return range(self.current_page - part, self.current_page + part + 1)
+
 
 # Create your views here.
 USER_LIST = []
@@ -30,15 +62,14 @@ def index(request):
 
 
 def index1(request):
-    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+    current_page = request.GET.get('p')
     # per_page 每页显示数量
     # count     数据总数量
     # num_pages 总页数
     # page_range 总页数索引范围
     # page      page对象
-    paginator = Paginator(USER_LIST, 10)
+    paginator = CustonPaginator(current_page, 10, USER_LIST, 10)
 
-    current_page = request.GET.get('p')
     try:
         posts = paginator.page(current_page)
         # has_next      是否有下一页
@@ -55,4 +86,4 @@ def index1(request):
     except EmptyPage:
         posts = paginator.page(paginator.num_pages)
 
-    return render(request, 'index1.html',{'posts':posts})
+    return render(request, 'index1.html', {'posts': posts})
