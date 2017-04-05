@@ -16,5 +16,14 @@ def index(request):
     start = (current_page - 1) * per_page_count
     end = current_page * per_page_count
     data = USER_LIST[start:end]
+    if current_page <1 :
+        prev_pager = 1
+    else:
+        prev_pager = current_page - 1
 
-    return render(request, 'index.html', {'users': data})
+    next_pager = current_page + 1
+
+    return render(request, 'index.html', {'users': data,
+                                          'prev_pager':prev_pager,
+                                          'next_pager':next_pager
+                                          })
